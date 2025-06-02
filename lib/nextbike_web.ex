@@ -86,6 +86,14 @@ defmodule NBCWeb do
       import Phoenix.HTML
       # Core UI components
       import NBCWeb.CoreComponents
+      
+      # Bike components
+      import NBCWeb.Components.Bike.Header
+      import NBCWeb.Components.Bike.CurrentLocation
+      import NBCWeb.Components.Bike.LocationHistory
+      import NBCWeb.Components.Bike.ErrorState
+      import NBCWeb.Components.Bike.EmptyData
+      import NBCWeb.Components.Bike.Navigation
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

@@ -1,154 +1,29 @@
 <div class="container mx-auto p-6 max-w-4xl">
   <%= if @error do %>
-    <div class="alert alert-error mb-6">
-      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span><%= @error %></span>
-    </div>
+    <.error_state message={@error} />
   <% else %>
-    <!-- Bike Header Card -->
-    <div class="card bg-base-100 shadow-lg mb-6">
-      <div class="card-body">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="card-title text-3xl">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-              </svg>
-              Bike <%= @bike_number %>
-            </h1>
-            <%= if @current_bike do %>
-              <p class="text-base-content/70">
-                Last seen: <%= format_datetime(@current_bike.inserted_at) %>
-              </p>
-            <% end %>
-          </div>
-          
-          <%= if @current_bike do %>
-            <div class="badge badge-primary badge-lg">
-              <%= if length(@history) == 1 do %>
-                First record
-              <% else %>
-                Active
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
+    <.bike_header 
+      bike_number={@bike_number} 
+      current_bike={@current_bike} 
+      history_count={length(@history)} 
+      format_datetime={&format_datetime/1}
+    />
 
     <%= if @current_bike do %>
-      <!-- Current Location Card -->
-      <div class="card bg-base-100 shadow-lg mb-6">
-        <div class="card-body">
-          <h2 class="card-title text-xl mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Current Location
-          </h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="stat bg-base-200 rounded-lg">
-              <div class="stat-title">Location</div>
-              <div class="stat-value text-lg"><%= format_location(@current_bike) %></div>
-            </div>
-            
-            <div class="stat bg-base-200 rounded-lg">
-              <div class="stat-title">Coordinates</div>
-              <div class="stat-value text-lg">
-                <%= Float.round(@current_bike.lat, 6) %>, <%= Float.round(@current_bike.lng, 6) %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <.current_location 
+        bike={@current_bike} 
+        format_location={&format_location/1} 
+      />
 
-      <!-- Location History -->
-      <div class="card bg-base-100 shadow-lg">
-        <div class="card-body">
-          <h2 class="card-title text-xl mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Location History
-            <div class="badge badge-neutral"><%= length(@history) %> records</div>
-          </h2>
-          
-          <%= if length(@history) > 0 do %>
-            <div class="overflow-x-auto">
-              <table class="table table-zebra">
-                <thead>
-                  <tr>
-                    <th>Date & Time</th>
-                    <th>Location</th>
-                    <th>Coordinates</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <%= for {bike, index} <- Enum.with_index(@history) do %>
-                    <tr class={if index == 0, do: "bg-primary/10"}>
-                      <td>
-                        <div class="flex items-center gap-2">
-                          <%= if index == 0 do %>
-                            <div class="badge badge-primary badge-sm">Latest</div>
-                          <% end %>
-                          <span class="font-mono text-sm">
-                            <%= format_datetime(bike.inserted_at) %>
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="max-w-xs truncate" title={format_location(bike)}>
-                          <%= format_location(bike) %>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="font-mono text-sm">
-                          <%= Float.round(bike.lat, 6) %>, <%= Float.round(bike.lng, 6) %>
-                        </div>
-                      </td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
-            </div>
-          <% else %>
-            <div class="text-center py-8">
-              <div class="text-base-content/50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47.943-6.017 2.472M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                <p>No location history available for this bike.</p>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      </div>
+      <.location_history 
+        history={@history} 
+        format_datetime={&format_datetime/1} 
+        format_location={&format_location/1} 
+      />
     <% else %>
-      <div class="card bg-base-100 shadow-lg">
-        <div class="card-body text-center">
-          <div class="text-base-content/50">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47.943-6.017 2.472M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <h3 class="text-lg font-semibold mb-2">No Data Available</h3>
-            <p>No location data found for bike <%= @bike_number %>.</p>
-          </div>
-        </div>
-      </div>
+      <.empty_data bike_number={@bike_number} />
     <% end %>
   <% end %>
 
-  <!-- Back Navigation -->
-  <div class="mt-6">
-    <.link navigate={~p"/"} class="btn btn-outline">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-      </svg>
-      Back to All Bikes
-    </.link>
-  </div>
+  <.navigation back_url={~p"/"} back_text="Back to All Bikes" />
 </div>
