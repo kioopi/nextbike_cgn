@@ -102,7 +102,7 @@ defmodule NBC.BikesTest do
       assert length(bikes) > 0
 
       # Verify all bikes are in the list
-      assert [1, 2, 3] = Enum.map(bikes, & &1.number)
+      assert [3, 2, 1] = Enum.map(bikes, & &1.number)
     end
 
     test "returns only the most recent bike for each number" do

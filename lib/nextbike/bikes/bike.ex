@@ -21,6 +21,7 @@ defmodule NBC.Bikes.Bike do
   code_interface do
     define :current, action: :current, args: [:number]
     define :create_from_api, action: :create_from_api
+    define :history, action: :history, args: [:number]
   end
 
   actions do
@@ -42,7 +43,14 @@ defmodule NBC.Bikes.Bike do
 
     read :list_current do
       description "Returns a list of all bikes at their latest positions"
-      prepare build(sort: [number: :asc, inserted_at: :desc], distinct: [:number])
+      prepare build(sort: [inserted_at: :desc], distinct: [:number])
+    end
+
+    read :history do
+      description "Returns the history of a bike with the given number"
+      argument :number, :integer, allow_nil?: false
+      prepare build(sort: [inserted_at: :desc])
+      filter expr(number == ^arg(:number))
     end
 
     action :create_from_api, :string do

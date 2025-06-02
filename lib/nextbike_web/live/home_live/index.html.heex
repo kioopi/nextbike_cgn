@@ -102,13 +102,21 @@
                 {Float.round(bike.lat, 4)}, {Float.round(bike.lng, 4)}
               </td>
               <td>
-                <a
-                  href={"https://maps.google.com/?q=#{bike.lat},#{bike.lng}"}
-                  target="_blank"
-                  class="btn btn-xs btn-outline btn-info"
-                >
-                  Map
-                </a>
+                <div class="flex gap-2">
+                  <.link
+                    navigate={~p"/bikes/#{bike.number}"}
+                    class="btn btn-xs btn-outline btn-primary"
+                  >
+                    Details
+                  </.link>
+                  <a
+                    href={"https://maps.google.com/?q=#{bike.lat},#{bike.lng}"}
+                    target="_blank"
+                    class="btn btn-xs btn-outline btn-info"
+                  >
+                    Map
+                  </a>
+                </div>
               </td>
             </tr>
           <% end %>
