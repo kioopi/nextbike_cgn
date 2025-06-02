@@ -22,15 +22,13 @@ defmodule NBCWeb.Components.BikeMapComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div>
-      <div
-        id="bike-map"
-        phx-hook="BikeMap"
-        phx-update="ignore"
-        style="width: 100%; height: 400px; margin-bottom: 20px;"
-        data-map-spec={Jason.encode!(@map_spec)}
-      >
-      </div>
+    <div
+      id="bike-map"
+      phx-hook="BikeMap"
+      phx-update="ignore"
+      style="width: 100%; height: 400px; margin-bottom: 20px;"
+      data-map-spec={Jason.encode!(@map_spec)}
+    >
     </div>
     """
   end

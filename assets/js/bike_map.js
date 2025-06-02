@@ -25,6 +25,7 @@ const BikeMap = {
         const popupContent = `
           <div>
             <strong>Bike #${properties.number}</strong><br>
+            <a href="/bikes/${properties.number}" class="btn btn-primary mt-2">View Details</a>
             ${properties.place_name ? `Location: ${properties.place_name}<br>` : ""}
             ${properties.place_number ? `Place #: ${properties.place_number}` : ""}
           </div>
