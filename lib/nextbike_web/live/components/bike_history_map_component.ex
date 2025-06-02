@@ -22,13 +22,24 @@ defmodule NBCWeb.Components.BikeHistoryMapComponent do
     <div class="card bg-base-100 shadow-lg">
       <div class="card-body">
         <h2 class="card-title text-xl mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 text-primary"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"
+            />
           </svg>
           Movement Path (Today)
-          <div class="badge badge-primary"><%= length(@today_history) %> locations</div>
+          <div class="badge badge-primary">{length(@today_history)} locations</div>
         </h2>
-        
+
         <%= if length(@today_history) > 1 do %>
           <div
             id="bike-history-map"
@@ -58,8 +69,19 @@ defmodule NBCWeb.Components.BikeHistoryMapComponent do
         <% else %>
           <div class="text-center py-8">
             <div class="text-base-content/50">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-16 w-16 mx-auto mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"
+                />
               </svg>
               <p>Not enough location data to show movement path.</p>
               <p class="text-sm">At least 2 locations are needed.</p>
@@ -73,25 +95,28 @@ defmodule NBCWeb.Components.BikeHistoryMapComponent do
 
   defp prepare_history_map(socket) do
     history = socket.assigns.history || []
-    
+
     # Filter to today's history only
     today = Date.utc_today()
-    today_history = Enum.filter(history, fn record ->
-      record.inserted_at
-      |> DateTime.to_date()
-      |> Date.compare(today) == :eq
-    end)
+
+    today_history =
+      Enum.filter(history, fn record ->
+        record.inserted_at
+        |> DateTime.to_date()
+        |> Date.compare(today) == :eq
+      end)
 
     socket = assign(socket, today_history: today_history)
 
     if length(today_history) > 1 do
       # Sort by time to create proper line sequence
       sorted_history = Enum.sort_by(today_history, & &1.inserted_at, DateTime)
-      
+
       # Create coordinates for the line (note: [lng, lat] format for GeoJSON)
-      coordinates = Enum.map(sorted_history, fn record ->
-        [record.lng, record.lat]
-      end)
+      coordinates =
+        Enum.map(sorted_history, fn record ->
+          [record.lng, record.lat]
+        end)
 
       # Create GeoJSON for the route line
       route_geojson = %{
@@ -116,7 +141,7 @@ defmodule NBCWeb.Components.BikeHistoryMapComponent do
           },
           properties: %{
             type: "start",
-            time: Calendar.strftime(start_point.inserted_at, "%I:%M %p")
+            time: Calendar.strftime(start_point.inserted_at, "%H:%M")
           }
         },
         %{
@@ -127,7 +152,7 @@ defmodule NBCWeb.Components.BikeHistoryMapComponent do
           },
           properties: %{
             type: "end",
-            time: Calendar.strftime(end_point.inserted_at, "%I:%M %p")
+            time: Calendar.strftime(end_point.inserted_at, "%H:%M")
           }
         }
       ]
@@ -220,7 +245,7 @@ defmodule NBCWeb.Components.BikeHistoryMapComponent do
 
   defp calculate_center(coordinates) do
     count = length(coordinates)
-    
+
     {total_lng, total_lat} =
       Enum.reduce(coordinates, {0, 0}, fn [lng, lat], {lng_sum, lat_sum} ->
         {lng_sum + lng, lat_sum + lat}
@@ -235,12 +260,12 @@ defmodule NBCWeb.Components.BikeHistoryMapComponent do
     # Calculate bounding box
     lngs = Enum.map(coordinates, fn [lng, _lat] -> lng end)
     lats = Enum.map(coordinates, fn [_lng, lat] -> lat end)
-    
+
     lng_diff = Enum.max(lngs) - Enum.min(lngs)
     lat_diff = Enum.max(lats) - Enum.min(lats)
-    
+
     max_diff = max(lng_diff, lat_diff)
-    
+
     cond do
       max_diff > 0.1 -> 10
       max_diff > 0.05 -> 12

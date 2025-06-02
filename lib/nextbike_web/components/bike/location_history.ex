@@ -147,11 +147,11 @@ defmodule NBCWeb.Components.Bike.LocationHistory do
     case date do
       ^today -> "Today"
       ^yesterday -> "Yesterday"
-      _ -> Calendar.strftime(date, "%B %d, %Y")
+      _ -> Calendar.strftime(date, "%d.%B, %Y")
     end
   end
 
   defp format_time(datetime) do
-    Calendar.strftime(datetime, "%I:%M %p")
+    Calendar.strftime(datetime, "%H:%M")
   end
 end
