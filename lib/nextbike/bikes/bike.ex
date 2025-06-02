@@ -14,7 +14,10 @@ defmodule NBC.Bikes.Bike do
 
   oban do
     scheduled_actions do
-      schedule :fetch_nextbike_api, "*/5 * * * *", action: :create_from_api, queue: :bikes
+      schedule :create_from_api, "*/5 * * * *" do
+        queue :bikes
+        worker_module_name NBC.Bikes.Bike.AshOban.ActionWorker.FetchNextbikeApi
+      end
     end
   end
 
