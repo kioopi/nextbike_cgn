@@ -4,7 +4,7 @@ Nextbike CGN is a Phoenix application that tracks KVB bike-sharing bicycles in C
 
 ## Features
 
-* Real-time map display of bike locations
+* Map display of bike locations
 * Historical bike position tracking
 * Automated data collection every 5 minutes
 
@@ -26,30 +26,6 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-### Docker Setup
-
-The application can also be run using Docker and Docker Compose:
-
-1. Make sure Docker and Docker Compose are installed on your system
-2. Clone the repository
-3. Build and start the containers:
-
-```bash
-docker-compose up -d
-```
-
-The application will be available at [`localhost:4000`](http://localhost:4000).
-
-#### Docker Environment Variables
-
-You can customize the Docker setup using the following environment variables:
-
-* `SECRET_KEY_BASE` - Secret key for Phoenix (auto-generated if not provided)
-* `DATABASE_URL` - PostgreSQL connection string
-* `BIKE_FETCH_SCHEDULE` - Cron schedule for bike data fetching (default: "*/5 * * * *")
-* `NEXTBIKE_CONNECT_TIMEOUT` - API connection timeout in ms (default: 10000)
-* `NEXTBIKE_RETRY_COUNT` - Number of API retry attempts (default: 3)
-
 ## Development
 
 ### Project Structure
@@ -58,14 +34,19 @@ The project follows standard Phoenix and Ash Framework conventions:
 
 * `lib/nextbike` - Core application logic and Ash resources
 * `lib/nextbike_web` - Web layer (controllers, LiveView, etc.)
-* `lib/nextbike/workers` - Background job workers using Oban
 
 ### Data Fetching
 
 Bike data is fetched from the Nextbike API using a scheduled Oban job every 5 minutes. You can also trigger a manual fetch in an IEx console:
 
+```bash
+iex -S mix
+```
+
+Then run the following command to fetch and store bike data:
+
 ```elixir
-NBC.Workers.BikeFetcher.schedule_fetch()
+NBC.Bikes.create_bikes_from_api()
 ```
 
 ## Learn more
