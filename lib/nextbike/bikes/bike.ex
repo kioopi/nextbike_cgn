@@ -47,6 +47,7 @@ defmodule NBC.Bikes.Bike do
     read :list_current do
       description "Returns a list of all bikes at their latest positions"
       prepare build(sort: [inserted_at: :desc], distinct: [:number])
+      filter expr(inserted_at > ago(1, "day"))
     end
 
     read :history do
