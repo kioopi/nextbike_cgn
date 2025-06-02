@@ -15,6 +15,12 @@
         format_location={&format_location/1} 
       />
 
+      <.live_component 
+        module={NBCWeb.Components.BikeHistoryMapComponent}
+        id="bike-history-map"
+        history={@history}
+      />
+
       <.location_history 
         history={@history} 
         format_datetime={&format_datetime/1} 

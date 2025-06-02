@@ -24,12 +24,13 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import BikeMap from "./bike_map"
+import BikeHistoryMap from "./bike_history_map"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-	hooks: { BikeMap }
+	hooks: { BikeMap, BikeHistoryMap }
 })
 
 // Show progress bar on live navigation and form submits
